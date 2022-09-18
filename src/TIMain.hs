@@ -45,20 +45,29 @@ data Expr = Var   Id
 -- definitions of the following combinators to match, and do not need to
 -- rewrite all the test code.
 
+ap :: [Expr] -> Expr
 ap              = foldl1 Ap
+evar :: Id -> Expr
 evar v          = (Var v)
+elit :: Literal -> Expr
 elit l          = (Lit l)
+econst :: Assump -> Expr
 econst c        = (Const c)
+elet :: [[(Id, Maybe Scheme, [Alt])]] -> Expr -> Expr
 elet e f        = foldr Let f (map toBg e)
 
 toBg           :: [(Id, Maybe Scheme, [Alt])] -> BindGroup
 toBg g          = ([(v, t, alts) | (v, Just t, alts) <- g ],
                    filter (not . null) [[(v,alts) | (v,Nothing,alts) <- g]])
 
+pNil :: Pat
 pNil            = PCon nilCfun []
+pCons :: Pat -> Pat -> Pat
 pCons x y       = PCon consCfun [x,y]
 
+eNil :: Expr
 eNil            = econst nilCfun
+eCons :: Expr -> Expr -> Expr
 eCons x y       = ap [ econst consCfun, x, y ]
 
 {-

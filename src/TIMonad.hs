@@ -32,6 +32,7 @@ instance Monad TI where
                                         in  gx s' m)
 
 instance MonadFail TI where
+  fail = error -- BOOM
 
 runTI       :: TI a -> a
 runTI (TI f) = x where (s,n,x) = f nullSubst 0
