@@ -26,6 +26,9 @@ data Tyvar = Tyvar Id Kind
 data Tycon = Tycon Id Kind
              deriving Eq
 
+instance Show Type where
+  showsPrec _ x = shows $ pprint x
+
 instance PPrint Type where
   pprint    = pptype 0
   parPprint = pptype 10

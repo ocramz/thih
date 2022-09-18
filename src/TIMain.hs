@@ -67,11 +67,16 @@ elambda         = Lam
 eif             = If
 -}
 
+ecase :: Expr -> [(Pat, Expr)] -> Expr
 ecase d as      = elet [[ ("_case",
                            Nothing,
                            [([p],e) | (p,e) <- as]) ]]
                        (ap [evar "_case", d])
+
+eif :: Expr -> Expr -> Expr -> Expr
 eif c t f       = ecase c [(PCon trueCfun [], t),(PCon falseCfun [], f)]
+
+elambda :: Alt -> Expr
 elambda alt     = elet [[ ("_lambda",
                            Nothing,
                            [alt]) ]]
@@ -79,12 +84,20 @@ elambda alt     = elet [[ ("_lambda",
 
 eguarded :: Foldable t => t (Expr, Expr) -> Expr
 eguarded        = foldr (\(c,t) e -> eif c t e) efail
+
+efail :: Expr
 efail           = Const ("FAIL" :>: Forall [Star] ([] :=> TGen 0))
+
+esign :: Expr -> Scheme -> Expr
 esign e t       = elet [[ ("_val", Just t, [([],e)]) ]] (evar "_val")
 
+eCompFrom :: Pat -> Expr -> Expr -> Expr
 eCompFrom p e c = ap [ econst mbindMfun, e, elambda ([p],c) ]
+eCompGuard :: Expr -> Expr -> Expr
 eCompGuard e c  = eif e c eNil
+eCompLet :: [[(Id, Maybe Scheme, [Alt])]] -> Expr -> Expr
 eCompLet bgs c  = elet bgs c
+eListRet :: Expr -> Expr
 eListRet e      = eCons e eNil
 
 -----------------------------------------------------------------------------

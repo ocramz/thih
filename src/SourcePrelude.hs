@@ -17,6 +17,12 @@ import Testbed
 import HaskellPrims
 import StaticPrelude
 
+-- t0 = (Forall [Star, Star]
+--              ([isIn1 cNum (TGen 0),
+--                isIn1 cIntegral (TGen 1)] :=> 
+--               (TGen 0 `fn` TGen 1 `fn` TGen 0)))
+
+
 -----------------------------------------------------------------------------
 -- Test Framework:
 

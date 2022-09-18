@@ -25,6 +25,9 @@ import PPrint
 data Qual t = [Pred] :=> t
               deriving Eq
 
+instance (PPrint t) => Show (Qual t) where
+  showsPrec _ x = shows (pprint x)
+
 instance PPrint t => PPrint (Qual t) where
   pprint (ps  :=> t) = (pprint ps <+> text ":=>") $$ nest 2 (parPprint t)
 
