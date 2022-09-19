@@ -45,23 +45,31 @@ data Expr = Var   Id
 -- definitions of the following combinators to match, and do not need to
 -- rewrite all the test code.
 
+-- | repeated 'Ap'plication
 ap :: [Expr] -> Expr
 ap              = foldl1 Ap
+-- | variable
 evar :: Id -> Expr
 evar v          = (Var v)
 elit :: Literal -> Expr
 elit l          = (Lit l)
+-- | 'Const'ants
 econst :: Assump -> Expr
 econst c        = (Const c)
-elet :: [[(Id, Maybe Scheme, [Alt])]] -> Expr -> Expr
+-- | @let .. in@
+elet :: [[(Id, Maybe Scheme, [Alt])]] -- ^ binding group
+     -> Expr -- ^ body
+     -> Expr
 elet e f        = foldr Let f (map toBg e)
 
 toBg           :: [(Id, Maybe Scheme, [Alt])] -> BindGroup
 toBg g          = ([(v, t, alts) | (v, Just t, alts) <- g ],
                    filter (not . null) [[(v,alts) | (v,Nothing,alts) <- g]])
 
+-- | empty list pattern
 pNil :: Pat
 pNil            = PCon nilCfun []
+-- | list cons pattern
 pCons :: Pat -> Pat -> Pat
 pCons x y       = PCon consCfun [x,y]
 
@@ -76,13 +84,17 @@ elambda         = Lam
 eif             = If
 -}
 
+-- | case expressions
 ecase :: Expr -> [(Pat, Expr)] -> Expr
 ecase d as      = elet [[ ("_case",
                            Nothing,
                            [([p],e) | (p,e) <- as]) ]]
                        (ap [evar "_case", d])
 
-eif :: Expr -> Expr -> Expr -> Expr
+eif :: Expr -- ^ condition
+    -> Expr -- ^ then
+    -> Expr -- ^ else
+    -> Expr
 eif c t f       = ecase c [(PCon trueCfun [], t),(PCon falseCfun [], f)]
 
 elambda :: Alt -> Expr
