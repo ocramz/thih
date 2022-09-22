@@ -37,7 +37,7 @@ import Static
 
 test          :: ClassEnv -> [Assump] -> [BindGroup] -> IO ()
 test ce as bgs = putStr $ render $ vcat $ map pprint $ reverse $
-                 tiProgram' ce as bgs
+                 runUnsafe ce as bgs
 
 save          :: String -> ClassEnv -> [Assump] -> [BindGroup] -> IO ()
 save f ce as bgs
@@ -51,6 +51,11 @@ save f ce as bgs
                    (text " = " <+>
                      brackets (fsep (punctuate comma (map pprint as'))))
                                         ++ "\n")
-                 where as' = reverse $ tiProgram' ce as bgs
+                 where as' = reverse $ runUnsafe ce as bgs
+
+runUnsafe :: ClassEnv -> [Assump] -> [BindGroup] -> [Assump]
+runUnsafe ce as bgs = case tiProgram' ce as bgs of
+  Right as' -> as'
+  Left e -> error e
 
 -----------------------------------------------------------------------------

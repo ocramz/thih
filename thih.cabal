@@ -38,7 +38,10 @@ Library
 
        hs-source-dirs: src
 
-       build-depends: base, pretty
+       build-depends: base
+                    , mtl
+                    , pretty
+                    , transformers >= 0.5
 
        ghc-options:      -Wall
        ghc-prof-options: -prof -auto-all

@@ -37,7 +37,20 @@ savePrelude   = save "Prelude"
                      defnsHaskellPrims
                      preludeDefns
 
+static :: ClassEnv
 Just static   = preludeClasses initialEnv
+
+
+runTIExpr :: Expr -> Type
+runTIExpr = snd . ti tiExpr
+
+ti :: (ClassEnv -> [a1] -> t -> TI a2) -> t -> a2
+ti f prog = case runTI $ f static [] prog of
+  Right x -> x
+  Left e -> error e
+
+eMap :: Expr
+eMap = eCompFrom (PVar "x") (evar "xs") (eListRet (ap [evar "f", evar "x"]))
 
 -----------------------------------------------------------------------------
 -- Main definitions:
