@@ -23,6 +23,8 @@ import Pred
 type Program = [BindGroup]
 
 -- tiProgram :: ClassEnv -> [Assump] -> Program -> [Assump]
+tiProgram :: ClassEnv
+          -> [Assump] -> [BindGroup] -> Either String [Assump]
 tiProgram ce as bgs = runTI $
                       do (ps, as') <- tiSeq tiBindGroup ce as bgs
                          s         <- getSubst
@@ -30,11 +32,15 @@ tiProgram ce as bgs = runTI $
                          s'        <- defaultSubst ce [] rs
                          return (apply (s'@@s) as')
 
+tiBindGroup' :: ClassEnv
+             -> [Assump] -> BindGroup -> TI ([Pred], [Assump])
 tiBindGroup' ce as bs = do (ps,as') <- tiBindGroup ce as bs
                            trim (tv (as'++as))
                            return (ps,as')
 
 -- tiProgram' :: ClassEnv -> [Assump] -> Program -> [Assump]
+tiProgram' :: ClassEnv
+           -> [Assump] -> [BindGroup] -> Either String [Assump]
 tiProgram' ce as bgs = runTI $
   do (ps, as') <- tiSeq tiBindGroup' ce as bgs
      s         <- getSubst
